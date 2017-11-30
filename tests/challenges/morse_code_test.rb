@@ -19,3 +19,18 @@ describe 'to_morse instance method' do
 		# TODO
 	end
 end
+
+describe 'obfuscate instance method' do
+	before do
+		@morse_code = Challenges::MorseCode.new
+	end
+	it 'should obfuscate a morse letter' do
+		assert_equal('3', @morse_code.obfuscate('...'))
+		assert_equal('B1A', @morse_code.obfuscate('--.-'))
+		assert_equal('2A1', @morse_code.obfuscate('..-.'))
+	end
+	it 'should obfuscate a sentence' do
+		assert_equal('2/1A|B/2|A1/A|1A1|C|2A|A3|1A2|1', 
+			@morse_code.obfuscate('../.-|--/..|-./-|.-.|---|..-|-...|.-..|.'))
+	end
+end
