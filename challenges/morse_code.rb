@@ -9,8 +9,13 @@ module Challenges
 		BASE_ALPHABET = 'A'.ord
 
 		# Reads text from stdin and outputs an obfuscated morse version of the input text
-		def stdin_text
-
+		def stdin_text()
+			stdout_text=""
+			while line=$stdin.gets
+				stdout_text += obfuscate(to_morse(line)) + "\n"
+			end
+			puts stdout_text
+			return stdout_text
 		end
 
 		# Reads from input_filepath and writes an obfuscated morse version of the input file into
@@ -22,7 +27,7 @@ module Challenges
 				i = File.new(input_filepath)
 				o = File.new(output_filepath, 'w')
 				while !i.eof?
-					o.write(obfuscate(to_morse(i.readline))+"\n")
+					o.write(obfuscate(to_morse(i.readline)) + "\n")
 				end
 				i.close
 				o.close 
@@ -40,7 +45,11 @@ module Challenges
 			words = alphanumeric_sentence.upcase.split(/\s+/)
 			words_morse = words.map do |word|
 				word_morse = word.chars.map do |c|
-					MORSE_ALPHANUMERIC[c.to_sym]
+					if MORSE_ALPHANUMERIC.has_key?(c.to_sym)
+						MORSE_ALPHANUMERIC[c.to_sym]
+					else
+						raise(StandardError, "letter #{c} does not have a morse value associated")
+					end
 				end
 				word_morse.join('|')
 			end

@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'stringio'
 require_relative '../../challenges/morse_code'
 
 describe 'to_morse instance method' do 
@@ -16,7 +17,14 @@ describe 'to_morse instance method' do
 			@morse_code.to_morse('123 456 789 0'))
 	end
 	it 'should convert a sentence with alphanumeric characteres' do
-		# TODO
+		assert_equal('../.-|--/..|-./-|.-.|---|..-|-...|.-..|./.----|..---|...--/....-|.....|-..../--...|---..|----./-----',
+			@morse_code.to_morse('I AM IN TROUBLE 123 456 789 0'))
+	end
+	it 'raises StandardError when a character is not known by morse code' do
+		e = assert_raises(StandardError) do
+			@morse_code.to_morse('I AM IN TROUBLE #')
+		end
+		assert_equal("letter # does not have a morse value associated", e.message)
 	end
 end
 
@@ -58,11 +66,26 @@ describe 'file_text instance method' do
 		assert(File.exist?(@output_filepath))
 		io = File.new(@output_filepath)
 		line = io.readline
-		assert_equal('4|1|1A2|1A2|C', line.chop)
+		assert_equal('4|1|1A2|1A2|C', line.chomp)
 		line = io.readline
-		assert_equal('2/1A|B/2|A1/A|1A1|C|2A|A3|1A2|1', line.chop)
+		assert_equal('2/1A|B/2|A1/A|1A1|C|2A|A3|1A2|1', line.chomp)
 		io.close
+	end
+	after do
+		File.delete(@output_filepath) if File.exist?(@output_filepath)
 	end
 end
 
-# TODO gracefully handle strange or invalid inputs
+describe 'stdin_text instance method' do
+	before do
+		@morse_code = Challenges::MorseCode.new
+	end
+	it 'reads from sdin and outpus to stdout its obfuscated morse' do
+		io = StringIO.new("HELLO\nI AM IN TROUBLE")
+		$stdin = io
+		assert_equal("4|1|1A2|1A2|C\n2/1A|B/2|A1/A|1A1|C|2A|A3|1A2|1\n", @morse_code.stdin_text)
+	end
+	after do
+		$stdin = STDIN
+	end
+end
