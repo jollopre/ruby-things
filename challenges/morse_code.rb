@@ -8,20 +8,27 @@ module Challenges
 		:"6" => '-....', :"7" => '--...', :"8" => '---..', :"9" => '----.', :"." => '.-.-.-', :"," => '--..--' }
 		BASE_ALPHABET = 'A'.ord
 
-		def read_from_stdin
+		# Reads text from stdin and outputs an obfuscated morse version of the input text
+		def stdin_text
 
 		end
 
-		def read_from_file(filename)
-
-		end
-
-		def write_to_stdout
-
-		end
-
-		def write_to_file(filename)
-
+		# Reads from input_filepath and writes an obfuscated morse version of the input file into
+		# the output_filepath provided
+		def file_text(input_filepath, output_filepath)
+			raise(ArgumentError, 'String input filepath is expected') unless input_filepath.is_a?(String)
+			raise(ArgumentError, 'String output filepath is expected') unless output_filepath.is_a?(String)
+			begin
+				i = File.new(input_filepath)
+				o = File.new(output_filepath, 'w')
+				while !i.eof?
+					o.write(obfuscate(to_morse(i.readline))+"\n")
+				end
+				i.close
+				o.close 
+			rescue IOError => e
+				puts "#{e.message}"
+			end
 		end
 
 		# Converts letters and numbers to each morse code equivalent. In addition, 
